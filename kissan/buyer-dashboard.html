@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Mandi | Buyer Dashboard</title>
+    <!-- MANDATORY: Use Tailwind CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer=""></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        .font-sans {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Organic Background matching Home */
+        .bg-organic {
+            background-color: #FDFBF7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dcb888' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+
+<body class="bg-organic font-sans text-[#1A2E1F] antialiased selection:bg-[#E8F5E9] selection:text-[#1A4D2E]">
+
+    <!-- RESTORED: Clean White Navbar (Premium E-commerce Style) -->
+    <nav class="sticky top-0 z-50 bg-white border-b border-[#E8E6DF] shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="flex items-center justify-between h-[72px] gap-6">
+
+                <!-- Logo (Fixed & Enhanced) -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer"
+                    onclick="window.location.href='home.html'">
+                    <img class="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm border border-gray-100"
+                        src="assets/logo_new.png" alt="Kisan Mandi Logo">
+                    <span class="font-bold text-xl tracking-tight text-[#1A4D2E] hidden md:block">Kisan Mandi</span>
+                </div>
+
+                <!-- Search Bar (Visible on Mobile & Desktop) -->
+                <div class="flex-1 max-w-2xl mx-2 md:mx-4">
+                    <div class="relative">
+                        <input type="text"
+                            class="w-full bg-[#F3F4F6] border-none rounded-xl py-2.5 md:py-3 pl-10 md:pl-12 pr-4 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-[#22C55E] focus:bg-white transition-all shadow-inner"
+                            placeholder="Search...">
+                        <div class="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 md:h-5 md:w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="h-6 w-px bg-gray-200 hidden md:block"></div>
+
+                    <!-- Profile -->
+                    <div class="flex items-center gap-2">
+                        <div class="text-right hidden lg:block">
+                            <p id="userName" class="text-xs font-bold text-gray-900 leading-none">Account</p>
+                            <p id="userRole" class="text-[10px] font-bold text-gray-500 uppercase mt-1">Verified Buyer
+                            </p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full border border-gray-200 p-0.5 bg-white">
+                            <img id="userAvatar" src="assets/buyer.png" class="h-full w-full rounded-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LOADING OVERLAY -->
+    <div id="authLoader" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-[#1A4D2E] border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 text-sm font-bold text-[#1A4D2E]">Verifying Buyer Access...</p>
+        <p id="loadTimer" class="mt-2 text-xs text-red-500 hidden">Taking longer than usual...</p>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-24">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- SIDEBAR NAV -->
+            <aside class="w-full lg:w-64 shrink-0 space-y-4">
+                <div class="bg-white rounded-2xl p-4 border border-[#E8E6DF] shadow-sm sticky top-24">
+                    <p class="text-xs font-bold text-gray-400 uppercase mb-3 px-3">Menu</p>
+                    <nav class="space-y-1">
+                        <button onclick="switchSection('queries')" id="nav-queries"
+                            class="w-full flex items-center gap-3 px-3 py-3 text-sm font-bold rounded-lg text-[#1A4D2E] bg-green-50 transition-colors">
+                            <span>💬</span> My Inquiries
+                        </button>
+                        <button onclick="switchSection('profile')" id="nav-profile"
+                            class="w-full flex items-center gap-3 px-3 py-3 text-sm font-bold rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+                            <span>👤</span> Edit Profile
+                        </button>
+                        <button id="logoutBtn-Desktop"
+                            class="w-full flex items-center gap-3 px-3 py-3 text-sm font-bold rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                            <span>👋</span> Logout
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- DYNAMIC SECTIONS -->
+            <div class="flex-1 min-w-0">
+
+                <!-- SECTION: QUERIES -->
+                <div id="section-queries" class="dashboard-section">
+                    <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                        <h2 class="text-2xl font-bold text-[#1A4D2E]">Sent Inquiries</h2>
+
+                        <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                            <!-- Filters -->
+                            <div class="flex gap-2">
+                                <select id="queryFilterStatus" onchange="applyFilters()"
+                                    class="bg-white border border-[#E8E6DF] rounded-xl px-3 py-2 text-xs font-bold text-[#1A4D2E] focus:ring-2 focus:ring-[#1A4D2E] outline-none">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="accepted">Accepted</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                <select id="querySortDate" onchange="applyFilters()"
+                                    class="bg-white border border-[#E8E6DF] rounded-xl px-3 py-2 text-xs font-bold text-[#1A4D2E] focus:ring-2 focus:ring-[#1A4D2E] outline-none">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="queriesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-full py-12 text-center text-gray-400">Loading your inquiries...</div>
+                    </div>
+                </div>
+
+                <!-- SECTION: PROFILE -->
+                <div id="section-profile" class="dashboard-section hidden">
+                    <div class="bg-white rounded-3xl p-6 md:p-8 border border-[#E8E6DF] shadow-sm max-w-2xl">
+                        <h2 class="text-xl font-bold text-[#1A4D2E] mb-6">Your Profile</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <input type="text" id="profName" placeholder="Full Name"
+                                class="bg-[#F3F6F4] border-none rounded-xl px-4 py-3 text-sm font-bold">
+                            <input type="tel" id="profPhone" placeholder="Phone"
+                                class="bg-[#F3F6F4] border-none rounded-xl px-4 py-3 text-sm font-bold">
+                            <input type="text" id="profCity" placeholder="City / Village"
+                                class="bg-[#F3F6F4] border-none rounded-xl px-4 py-3 text-sm font-bold">
+                            <input type="text" id="profState" placeholder="State"
+                                class="bg-[#F3F6F4] border-none rounded-xl px-4 py-3 text-sm font-bold">
+                        </div>
+                        <button id="saveProfile"
+                            class="bg-[#1A4D2E] text-white px-6 py-3 rounded-xl text-sm font-bold transition hover:bg-[#143D24]">Save
+                            Changes</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-xl translate-y-24 transition duration-300 z-50">
+        Success
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E6DF] lg:hidden z-50 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-around items-center h-16">
+            <a href="home.html" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-[#1A4D2E]">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="text-[10px] font-bold">Me</span>
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, database, ref, get, set, push, onValue, remove, update } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        // GLOBAL ERROR REPORTING
+        window.onerror = function (msg, url, line, col, error) {
+            console.error("GLOBAL ERROR:", msg, error);
+            alert("⚠️ Web App Error: " + msg + "\nLine: " + line);
+            return false;
+        };
+
+        // Timeout Fallback
+        setTimeout(() => {
+            const l = document.getElementById('loadTimer');
+            if (l) l.classList.remove('hidden');
+        }, 5000);
+
+        let currentUser = null;
+
+        // AUTH CHECK (Robust RBAC)
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const uid = user.uid;
+                try {
+                    const snap = await get(ref(database, `users/${uid}`));
+                    if (snap.exists() && snap.val().role === 'buyer') {
+                        currentUser = user;
+
+                        // Set UI
+                        document.getElementById('userName').textContent = snap.val().name || "Buyer";
+                        const avatarEl = document.getElementById('userAvatar');
+                        if (avatarEl) avatarEl.src = "assets/buyer.png";
+
+                        loadProfile(snap.val());
+                        loadQueries(uid);
+
+                        // Clear Loader
+                        document.getElementById('authLoader').style.display = 'none';
+                    } else {
+                        // Unauthorized Role
+                        alert("Access Denied: You must be a Buyer to access this dashboard.");
+                        window.location.href = 'home.html';
+                    }
+                } catch (e) {
+                    console.error("RBAC Check Error:", e);
+                    alert("Verification failed. Please try again.");
+                    window.location.href = 'index.html';
+                }
+            } else {
+                // Not Logged In
+                window.location.href = 'index.html';
+            }
+        });
+
+        // TABS
+        window.switchSection = (id) => {
+            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`section-${id}`).classList.remove('hidden');
+
+            const navIds = ['profile', 'queries'];
+            navIds.forEach(n => {
+                const btn = document.getElementById(`nav-${n}`);
+                if (n === id) {
+                    btn.className = "w-full flex items-center gap-3 px-3 py-3 text-sm font-bold rounded-lg text-[#1A4D2E] bg-green-50 transition-colors";
+                } else {
+                    btn.className = "w-full flex items-center gap-3 px-3 py-3 text-sm font-bold rounded-lg text-gray-600 hover:bg-gray-50 transition-colors";
+                }
+            });
+        };
+
+        // PROFILE
+        const saveProfBtn = document.getElementById('saveProfile');
+        saveProfBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            saveProfBtn.textContent = "Saving...";
+            try {
+                const updates = {
+                    name: document.getElementById('profName').value,
+                    phone: document.getElementById('profPhone').value,
+                    city: document.getElementById('profCity').value,
+                    state: document.getElementById('profState').value
+                };
+                await set(ref(database, `users/${currentUser.uid}/name`), updates.name);
+                await set(ref(database, `users/${currentUser.uid}/phone`), updates.phone);
+                await set(ref(database, `users/${currentUser.uid}/city`), updates.city);
+                await set(ref(database, `users/${currentUser.uid}/state`), updates.state);
+                showToast("Profile Updated");
+            } catch (e) { console.error(e); }
+            saveProfBtn.textContent = "Save Changes";
+        });
+
+        function loadProfile(data) {
+            document.getElementById('profName').value = data.name || "";
+            document.getElementById('profPhone').value = data.phone || "";
+            document.getElementById('profCity').value = data.city || "";
+            document.getElementById('profState').value = data.state || "";
+        }
+
+        // LOAD QUERIES (Buyers only see sentQueries)
+        let allQueriesRaw = [];
+
+        function loadQueries(uid) {
+            onValue(ref(database, `users/${uid}/sentQueries`), (snap) => {
+                allQueriesRaw = [];
+                if (snap.exists()) {
+                    allQueriesRaw = Object.entries(snap.val()).map(([key, val]) => ({ id: key, ...val }));
+                }
+                applyFilters();
+            });
+        }
+
+        window.applyFilters = () => {
+            const statusFilter = document.getElementById('queryFilterStatus').value;
+            const dateSort = document.getElementById('querySortDate').value;
+            let filtered = [...allQueriesRaw];
+
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(q => (q.status || 'pending') === statusFilter);
+            }
+
+            filtered.sort((a, b) => {
+                return dateSort === 'newest' ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
+            });
+
+            renderQueriesGrid(filtered);
+        };
+
+        function renderQueriesGrid(queries) {
+            const grid = document.getElementById('queriesGrid');
+            grid.innerHTML = "";
+
+            if (queries.length > 0) {
+                queries.forEach((q) => {
+                    const date = new Date(q.timestamp).toLocaleDateString();
+                    const status = q.status || 'pending';
+
+                    let statusBadge = '';
+                    if (status === 'accepted') {
+                        statusBadge = `<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded">ACCEPTED</span>`;
+                    } else if (status === 'rejected') {
+                        statusBadge = `<span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded">REJECTED</span>`;
+                    } else {
+                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded">PENDING</span>`;
+                    }
+
+                    grid.innerHTML += `
+                    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded uppercase tracking-wider">${date}</span>
+                                ${statusBadge}
+                            </div>
+                            <button onclick="deleteQuery('${q.id}')" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Delete Inquiry">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </div>
+                        
+                        <h3 class="font-bold text-[#1A4D2E] text-lg mb-1 leading-tight">${q.productName}</h3>
+                        
+                        <div class="space-y-2 mt-3">
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm">🧔</span>
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase leading-none mb-1">Farmer</p>
+                                    <p class="text-sm font-bold text-[#1A2E1F]">${q.farmerName || 'Farmer Store'}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm">📦</span>
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase leading-none mb-1">Quantity Requested</p>
+                                    <p class="text-sm font-bold text-[#1A4D2E]">${q.quantity}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm">📍</span>
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase leading-none mb-1">Delivery To</p>
+                                    <p class="text-sm font-medium text-gray-600 line-clamp-1">${q.buyerAddress} - Pin: ${q.buyerPinCode || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${q.message ? `
+                        <div class="mt-4 bg-[#FDFBF7] p-3 rounded-xl border border-[#E8E6DF]">
+                            <p class="text-xs text-gray-500 italic leading-relaxed">"${q.message}"</p>
+                        </div>` : ''}
+
+                        <div class="mt-5 pt-4 border-t border-gray-50">
+                            <div class="text-center py-2 px-4 rounded-xl ${status === 'accepted' ? 'bg-green-50 text-green-700' : (status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700')} text-xs font-bold uppercase tracking-wide">
+                                ${status === 'accepted' ? 'Approved! Farmer will contact you.' : (status === 'rejected' ? 'Not available' : 'Waiting for Farmer to review')}
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                grid.innerHTML = `
+                <div class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+                    <span class="text-4xl mb-4 opacity-20">📭</span>
+                    <p class="text-gray-400 font-bold max-w-xs leading-relaxed">
+                        You haven't sent any inquiries yet. Explore fresh harvests on the home page!
+                    </p>
+                </div>`;
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.classList.remove('translate-y-24');
+            setTimeout(() => {
+                const toastEl = document.getElementById('toast');
+                if (toastEl) toastEl.classList.add('translate-y-24');
+            }, 3000);
+        }
+
+        const handleLogout = () => {
+            signOut(auth).then(() => window.location.href = 'index.html');
+        };
+
+        const logoutBtnDesk = document.getElementById('logoutBtn-Desktop');
+        if (logoutBtnDesk) logoutBtnDesk.addEventListener('click', handleLogout);
+
+        window.deleteQuery = async (queryId) => {
+            if (!currentUser) return;
+            if (!confirm("Are you sure you want to delete this inquiry?")) return;
+
+            try {
+                await remove(ref(database, `users/${currentUser.uid}/sentQueries/${queryId}`));
+                showToast("Inquiry Deleted");
+            } catch (error) {
+                console.error("Delete Error:", error);
+                alert("Failed to delete inquiry.");
+            }
+        };
+
+    </script>
+</body>
+
+</html>

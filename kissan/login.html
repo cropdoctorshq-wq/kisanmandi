@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Mandi - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer=""></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-white lg:bg-gray-50 min-h-screen flex items-center justify-center lg:p-12">
+
+    <div
+        class="bg-white lg:rounded-[2rem] lg:shadow-2xl lg:shadow-green-100 overflow-hidden w-full max-w-5xl flex flex-col lg:flex-row min-h-[600px] border-0 lg:border border-green-50">
+
+        <!-- Left Section: Form -->
+        <div class="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-center relative z-10">
+
+            <a href="index.html" class="text-green-600 font-semibold mb-8 flex items-center hover:underline w-fit">
+                ← Back to Home
+            </a>
+
+            <h2 class="text-3xl font-extrabold text-green-900 mb-2">Welcome Back</h2>
+            <p class="text-gray-500 mb-8">Login to access your Kisan Mandi dashboard.</p>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="email" required placeholder="example@kisan.com"
+                        class="w-full px-5 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••"
+                        class="w-full px-5 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200">
+                </div>
+
+                <div id="errorMessage"
+                    class="hidden p-4 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 flex items-center">
+                    <span class="mr-2">⚠️</span> <span id="errorText"></span>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-full transition shadow-lg shadow-green-200 mt-4 transform active:scale-95">
+                    Log In
+                </button>
+            </form>
+
+            <p class="text-center mt-8 text-sm text-gray-500">
+                New to Kisan Mandi? <a href="index.html" class="text-green-600 font-semibold hover:underline">Create
+                    Account</a>
+            </p>
+        </div>
+
+        <!-- Right Section: Image -->
+        <div
+            class="w-full lg:w-1/2 bg-green-50 relative overflow-hidden flex items-center justify-center p-8 hidden lg:flex">
+            <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100"></div>
+            <img src="assets/login.png" alt="Welcome Login" class="relative z-10 w-3/4 object-contain drop-shadow-xl">
+        </div>
+    </div>
+
+    <!-- Script Logic Preserved Exactly -->
+    <script type="module">
+        import { auth, database, ref, get, child } from './firebase-config.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        const loginForm = document.getElementById('loginForm');
+        // Note: Modified HTML structure slightly, need to ensuring IDs match.
+        // I added 'errorText' span inside 'errorMessage' div but script targets 'errorMessage'.
+        // I should stick to script logic: script sets errorMessage.textContent.
+        // So I must revert the inner HTML of errorMessage to contain just text or handle it.
+        // Script says: errorMessage.textContent = error.message;
+        // So I will simplify the HTML for errorMessage to standard empty div.
+
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.classList.add('hidden');
+            errorMessage.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verifying...';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // 1. Authenticate User
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const uid = user.uid;
+
+                console.log("Logged in auth user:", uid);
+
+                // 2. Fetch User Role from Database
+                const dbRef = ref(database);
+                const snapshot = await get(child(dbRef, `users/${uid}`));
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const role = userData.role;
+                    console.log("User data found:", userData);
+
+                    if (role) {
+                        // Success!
+                        window.location.href = 'home.html';
+                    } else {
+                        throw new Error("User role not found in database.");
+                    }
+                } else {
+                    console.error("No data available for user:", uid);
+                    throw new Error("User record not found in database. Please contact support.");
+                }
+
+            } catch (error) {
+                console.error("Login Error:", error);
+                errorMessage.textContent = error.message;
+                errorMessage.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Log In';
+            }
+        });
+    </script>
+</body>
+
+</html>

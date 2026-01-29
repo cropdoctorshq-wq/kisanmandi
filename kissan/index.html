@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Mandi - Welcome</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer=""></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4 lg:p-12">
+
+    <div
+        class="bg-white rounded-[2rem] shadow-2xl shadow-green-100 overflow-hidden w-full max-w-6xl flex flex-col lg:flex-row min-h-[600px] border border-green-50 relative">
+
+        <!-- Left Section: Content -->
+        <div class="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-center order-2 lg:order-1 relative z-10">
+
+            <!-- Logo Section -->
+            <div class="mb-6 lg:mb-10 -ml-2">
+                <!-- Increased height to h-20 for larger visibility -->
+                <img src="assets/logo.jpeg" alt="Kisan Mandi Logo" class="h-10 w-auto object-contain">
+            </div>
+
+            <span
+                class="inline-block bg-green-100 text-green-700 font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-wide mb-6 w-fit">
+                Direct Farm-to-Table
+            </span>
+
+            <h1 class="text-4xl lg:text-5xl font-extrabold text-green-900 mb-4 leading-tight">
+                Empowering <br> <span class="text-green-600">Indian Farmers</span>
+            </h1>
+
+            <p class="text-gray-500 text-lg mb-10 leading-relaxed">
+                Connect directly with buyers, sell your produce at fair prices, and grow your business without
+                middlemen.
+            </p>
+
+            <div class="space-y-4 max-w-sm">
+                <a href="login.html"
+                    class="block w-full bg-green-600 hover:bg-green-700 text-white text-center font-bold py-4 rounded-full transition shadow-lg shadow-green-200 transform hover:-translate-y-0.5">
+                    Login to Account
+                </a>
+
+                <div class="relative py-3 flex items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">NEW TO KISAN MANDI?</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="signup-farmer.html"
+                        class="flex flex-col items-center justify-center bg-green-50 hover:bg-green-100 text-green-800 font-semibold py-4 rounded-2xl border border-green-200 transition text-sm group">
+                        <span class="text-2xl mb-1 group-hover:scale-110 transition">🚜</span>
+                        I'm a Farmer
+                    </a>
+                    <a href="signup-buyer.html"
+                        class="flex flex-col items-center justify-center bg-green-50 hover:bg-green-100 text-green-800 font-semibold py-4 rounded-2xl border border-green-200 transition text-sm group">
+                        <span class="text-2xl mb-1 group-hover:scale-110 transition">🛍️</span>
+                        I'm a Buyer
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-12 flex items-center space-x-4 text-sm text-gray-400">
+                <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-green-200 border-2 border-white"></div>
+                    <div class="w-8 h-8 rounded-full bg-green-300 border-2 border-white"></div>
+                    <div class="w-8 h-8 rounded-full bg-green-400 border-2 border-white"></div>
+                </div>
+                <span>Trusted by 500+ Farmers</span>
+            </div>
+        </div>
+
+        <!-- Right Section: Image -->
+        <div
+            class="w-full lg:w-1/2 bg-green-50 relative order-1 lg:order-2 overflow-hidden flex items-center justify-center p-8">
+            <div class="absolute inset-0 bg-green-100/50 rounded-bl-[4rem]"></div>
+            <img src="assets/landing.png" alt="Kisan Mandi Farmer"
+                class="relative z-10 w-full max-w-md lg:max-w-lg object-contain hover:scale-105 transition duration-700 ease-out">
+        </div>
+
+    </div>
+
+</body>
+
+</html>
